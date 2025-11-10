@@ -12,16 +12,24 @@ import {
   Check,
 } from "lucide-react";
 import { Button } from "./components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Slider } from "./components/ui/slider";
 import { Label } from "./components/ui/label";
+
+// Assumindo que esses componentes existem em seus respectivos arquivos
 import { ColorPaletteGenerator } from "./components/ColorPaletteGenerator";
 import { SvgToJsxConverter } from "./components/SvgToJsxConverter";
 import { JsonFormatter } from "./components/JsonFormatter";
 import { SnippetManager } from "./components/SnippetManager";
 
-
+// --- Componente BoxShadowGenerator (sem alterações) ---
 function BoxShadowGenerator() {
   const [offsetX, setOffsetX] = useState([0]);
   const [offsetY, setOffsetY] = useState([10]);
@@ -47,19 +55,19 @@ function BoxShadowGenerator() {
 
   const handleCopy = () => {
     try {
-      const textarea = document.createElement('textarea');
+      const textarea = document.createElement("textarea");
       textarea.value = cssCode;
-      textarea.style.position = 'fixed';
+      textarea.style.position = "fixed";
       document.body.appendChild(textarea);
       textarea.focus();
       textarea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textarea);
 
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error("Failed to copy: ", err);
     }
   };
 
@@ -114,7 +122,7 @@ function BoxShadowGenerator() {
               value={color}
               onChange={(e) => setColor(e.target.value)}
               className="w-16 h-10 rounded cursor-pointer border-none p-0"
-              style={{ appearance: 'none' }}
+              style={{ appearance: "none" }}
             />
             <span className="text-sm text-muted-foreground">{color}</span>
           </div>
@@ -155,26 +163,53 @@ function BoxShadowGenerator() {
   );
 }
 
-// --- Main App Component ---
+// --- Main App Component (Layout com Grid) ---
 export default function App() {
+  const [activeTab, setActiveTab] = useState("box-shadow");
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center">
-       <img
+    // MUDANÇA 1: Usamos 'items-start' para alinhar os filhos (logo, tools) ao topo
+    <div className="min-h-screen bg-background text-foreground flex items-start justify-start">
+      
+      {/* Container do Logo (auto-centralizado verticalmente) */}
+      <div className="flex items-center min-h-screen" style={{ marginLeft: 20 }}>
+        <img
           width={320}
           alt="logotipo"
           src="/logoVDsemfundo1.png"
-          style={{ display: "block", marginLeft: 20}}
         />
-      <div className="container mx-15 p-4 sm:p-6 max-w-7xl">
-       
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Ferramentas de desenvolvimento</h1>
-          <p className="text-lg text-muted-foreground">
-            Um conjunto de micro-ferramentas úteis para o dia a dia de desenvolvimento
-          </p>
-        </div>
+      </div>
 
-        <Tabs defaultValue="box-shadow" className="w-full">
+      {/* MUDANÇA 2: Container das Ferramentas
+          - 'flex-1' faz ele ocupar a largura restante
+          - 'flex flex-col' organiza seus filhos (título, tabs) verticalmente
+          - 'self-stretch' faz ele ocupar 100% da altura do pai ('items-start')
+      */}
+      <div className="container mx-15 p-4 sm:p-6 max-w-7xl flex-1 flex flex-col self-stretch mt-8">
+        
+        {/* Título condicional (Isto funciona para mover a aba) */}
+        {activeTab === "box-shadow" && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">
+              Ferramentas de desenvolvimento
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Um conjunto de micro-ferramentas úteis para o dia a dia de
+              desenvolvimento
+            </p>
+          </div>
+        )}
+
+        {/* MUDANÇA 3: <Tabs>
+            - 'flex flex-col flex-1' faz o <Tabs> crescer para preencher
+              o espaço vertical restante deixado pelo `div.container`
+        */}
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full flex flex-col flex-1"
+        >
+          {/* A barra de abas não precisa mudar */}
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-8">
             <TabsTrigger value="box-shadow" className="gap-2">
               <Box className="h-4 w-4" />
@@ -200,9 +235,15 @@ export default function App() {
               <span className="hidden sm:inline">Snippets</span>
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="box-shadow">
-            <Card>
+          
+          {/* MUDANÇA 4: <TabsContent> e <Card>
+              - 'flex-1' no <TabsContent> faz ele preencher o espaço dentro de <Tabs>
+              - 'h-full' no <Card> faz ele preencher 100% da altura do <TabsContent>
+              - Isso garante a "mesma medida"
+          */}
+          
+          <TabsContent value="box-shadow" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Gerador de Box Shadow</CardTitle>
                 <CardDescription>
@@ -215,8 +256,8 @@ export default function App() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="colors">
-            <Card>
+          <TabsContent value="colors" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Gerador de Paleta de Cores</CardTitle>
                 <CardDescription>
@@ -229,8 +270,8 @@ export default function App() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="svg">
-            <Card>
+          <TabsContent value="svg" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Conversor SVG para JSX</CardTitle>
                 <CardDescription>
@@ -243,8 +284,8 @@ export default function App() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="json">
-            <Card>
+          <TabsContent value="json" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Formatador de JSON</CardTitle>
                 <CardDescription>
@@ -257,8 +298,8 @@ export default function App() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="snippets">
-            <Card>
+          <TabsContent value="snippets" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Gerenciador de Snippets</CardTitle>
                 <CardDescription>
@@ -270,6 +311,7 @@ export default function App() {
               </CardContent>
             </Card>
           </TabsContent>
+          
         </Tabs>
       </div>
     </div>
