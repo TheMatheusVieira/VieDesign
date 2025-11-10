@@ -10,6 +10,7 @@ import {
   BookMarked,
   Copy,
   Check,
+  Blend,
 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import {
@@ -28,6 +29,7 @@ import { ColorPaletteGenerator } from "./components/ColorPaletteGenerator";
 import { SvgToJsxConverter } from "./components/SvgToJsxConverter";
 import { JsonFormatter } from "./components/JsonFormatter";
 import { SnippetManager } from "./components/SnippetManager";
+import { GradientGenerator } from "./components/GradientGenerator";
 
 // --- Componente BoxShadowGenerator (sem alterações) ---
 function BoxShadowGenerator() {
@@ -221,6 +223,10 @@ export default function App() {
               <span className="hidden sm:inline">Cores</span>
               <span className="sm:hidden">Colors</span>
             </TabsTrigger>
+             <TabsTrigger value="gradient" className="gap-2">
+              <Blend className="h-4 w-4" />
+              <span className="hidden sm:inline">Gradientes</span>
+            </TabsTrigger>
             <TabsTrigger value="svg" className="gap-2">
               <Code2 className="h-4 w-4" />
               <span className="hidden sm:inline">SVG → JSX</span>
@@ -266,6 +272,20 @@ export default function App() {
               </CardHeader>
               <CardContent>
                 <ColorPaletteGenerator />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+            <TabsContent value="gradient">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gerador de Gradientes</CardTitle>
+                <CardDescription>
+                  Crie gradientes personalizados e copie o código CSS
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <GradientGenerator />
               </CardContent>
             </Card>
           </TabsContent>

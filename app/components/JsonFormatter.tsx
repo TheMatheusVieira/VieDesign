@@ -75,7 +75,7 @@ export function JsonFormatter() {
           placeholder='{"name": "Example", "data": [1, 2, 3]}'
           className="font-mono min-h-[200px]"
         />
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap justify-end">
           <Button onClick={handleFormat}>Formatar</Button>
           <Button onClick={handleMinify} variant="outline">
             Minificar
