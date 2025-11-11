@@ -24,14 +24,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Slider } from "./components/ui/slider";
 import { Label } from "./components/ui/label";
 
-// Assumindo que esses componentes existem em seus respectivos arquivos
 import { ColorPaletteGenerator } from "./components/ColorPaletteGenerator";
 import { SvgToJsxConverter } from "./components/SvgToJsxConverter";
 import { JsonFormatter } from "./components/JsonFormatter";
 import { SnippetManager } from "./components/SnippetManager";
 import { GradientGenerator } from "./components/GradientGenerator";
 
-// --- Componente BoxShadowGenerator (sem alterações) ---
 function BoxShadowGenerator() {
   const [offsetX, setOffsetX] = useState([0]);
   const [offsetY, setOffsetY] = useState([10]);
@@ -55,21 +53,15 @@ function BoxShadowGenerator() {
 
   const cssCode = `box-shadow: ${boxShadow};`;
 
-  const handleCopy = () => {
-    try {
-      const textarea = document.createElement("textarea");
-      textarea.value = cssCode;
-      textarea.style.position = "fixed";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
+  const handleCopy = async () => {
+    if (copied) return;
 
+    try {
+      await navigator.clipboard.writeText(cssCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy: ", err);
+      console.error("Failed to copy text: ", err);
     }
   };
 
@@ -165,31 +157,19 @@ function BoxShadowGenerator() {
   );
 }
 
-// --- Main App Component (Layout com Grid) ---
 export default function App() {
   const [activeTab, setActiveTab] = useState("box-shadow");
 
   return (
-    // MUDANÇA 1: Usamos 'items-start' para alinhar os filhos (logo, tools) ao topo
-    <div className="min-h-screen bg-background text-foreground flex items-start justify-start">
-      
-      {/* Container do Logo (auto-centralizado verticalmente) */}
-      <div className="flex items-center min-h-screen" style={{ marginLeft: 20 }}>
+    <div className="flex min-h-screen bg-background text-foreground">
+      <aside className="w-[320px] flex items-center justify-center p-5">
         <img
           width={320}
-          alt="logotipo"
+          alt="logotipo Vie Design"
           src="/logoVDsemfundo1.png"
         />
-      </div>
-
-      {/* MUDANÇA 2: Container das Ferramentas
-          - 'flex-1' faz ele ocupar a largura restante
-          - 'flex flex-col' organiza seus filhos (título, tabs) verticalmente
-          - 'self-stretch' faz ele ocupar 100% da altura do pai ('items-start')
-      */}
-      <div className="container mx-15 p-4 sm:p-6 max-w-7xl flex-1 flex flex-col self-stretch mt-8">
-        
-        {/* Título condicional (Isto funciona para mover a aba) */}
+      </aside>
+      <main className="container mx-auto max-w-8xl flex-1 flex flex-col p-4 sm:p-10">
         {activeTab === "box-shadow" && (
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">
@@ -201,18 +181,12 @@ export default function App() {
             </p>
           </div>
         )}
-
-        {/* MUDANÇA 3: <Tabs>
-            - 'flex flex-col flex-1' faz o <Tabs> crescer para preencher
-              o espaço vertical restante deixado pelo `div.container`
-        */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="w-full flex flex-col flex-1"
         >
-          {/* A barra de abas não precisa mudar */}
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 mb-8">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8">
             <TabsTrigger value="box-shadow" className="gap-2">
               <Box className="h-4 w-4" />
               <span className="hidden sm:inline">Box Shadow</span>
@@ -223,7 +197,7 @@ export default function App() {
               <span className="hidden sm:inline">Cores</span>
               <span className="sm:hidden">Colors</span>
             </TabsTrigger>
-             <TabsTrigger value="gradient" className="gap-2">
+            <TabsTrigger value="gradient" className="gap-2">
               <Blend className="h-4 w-4" />
               <span className="hidden sm:inline">Gradientes</span>
             </TabsTrigger>
@@ -242,18 +216,12 @@ export default function App() {
             </TabsTrigger>
           </TabsList>
           
-          {/* MUDANÇA 4: <TabsContent> e <Card>
-              - 'flex-1' no <TabsContent> faz ele preencher o espaço dentro de <Tabs>
-              - 'h-full' no <Card> faz ele preencher 100% da altura do <TabsContent>
-              - Isso garante a "mesma medida"
-          */}
-          
           <TabsContent value="box-shadow" className="flex-1">
             <Card className="h-full">
               <CardHeader>
                 <CardTitle>Gerador de Box Shadow</CardTitle>
                 <CardDescription>
-                  Crie sombras perfeitas visualmente e copie o código CSS
+                  Crie sombras perfeitas e copie o código CSS
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -267,7 +235,7 @@ export default function App() {
               <CardHeader>
                 <CardTitle>Gerador de Paleta de Cores</CardTitle>
                 <CardDescription>
-                  Gere paletas de cores harmônicas para seus projetos
+                  Gere paletas de cores harmônicas para os seus projetos
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -276,8 +244,8 @@ export default function App() {
             </Card>
           </TabsContent>
 
-            <TabsContent value="gradient">
-            <Card>
+          <TabsContent value="gradient" className="flex-1">
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle>Gerador de Gradientes</CardTitle>
                 <CardDescription>
@@ -333,7 +301,7 @@ export default function App() {
           </TabsContent>
           
         </Tabs>
-      </div>
+      </main>
     </div>
   );
 }
